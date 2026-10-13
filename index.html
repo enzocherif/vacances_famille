@@ -8,145 +8,184 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
-/* Layout : une seule colonne étroite, bandeau des jours collant en haut, une fiche par jour. */
+/* Layout : une colonne étroite façon carnet de voyage. En-tête avec les 4 étapes, bandeau des jours collant, une fiche par jour avec une frise horaire. */
 :root {
-  --bg: #f5f6f8;
+  --bg: #eef1f5;
   --surface: #ffffff;
-  --ink: #18202e;
-  --muted: #5b6475;
-  --line: #dde1e8;
-  --accent: #1f4fd1;
+  --soft: #f4f6f9;
+  --ink: #141b29;
+  --muted: #5a6476;
+  --line: #dfe3ea;
+  --accent: #1d4ed8;
+  --hero: #14213d;
+  --hero-ink: #f4f6fb;
   --nyc: #e0a100;
   --phl: #2f8f6b;
   --dc: #c8373b;
   --pgh: #7a5cd6;
-  --chip-ink: #18202e;
+  --chip-ink: #141b29;
   --font-display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
   --font-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #11151d; --surface: #1a2029; --ink: #eef1f6; --muted: #a3acbb; --line: #2c3442;
-    --accent: #7ea2ff; --nyc: #f2bd3a; --phl: #4fc196; --dc: #ef6a6d; --pgh: #a48cf0; --chip-ink: #11151d;
+    --bg: #0e1219; --surface: #171d27; --soft: #1f2632; --ink: #eef1f6; --muted: #a3acbb; --line: #2a3240;
+    --accent: #8aa9ff; --hero: #1b2a4a; --hero-ink: #f4f6fb;
+    --nyc: #f2bd3a; --phl: #4fc196; --dc: #ef6a6d; --pgh: #a48cf0; --chip-ink: #0e1219;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #11151d; --surface: #1a2029; --ink: #eef1f6; --muted: #a3acbb; --line: #2c3442;
-  --accent: #7ea2ff; --nyc: #f2bd3a; --phl: #4fc196; --dc: #ef6a6d; --pgh: #a48cf0; --chip-ink: #11151d;
+  --bg: #0e1219; --surface: #171d27; --soft: #1f2632; --ink: #eef1f6; --muted: #a3acbb; --line: #2a3240;
+  --accent: #8aa9ff; --hero: #1b2a4a; --hero-ink: #f4f6fb;
+  --nyc: #f2bd3a; --phl: #4fc196; --dc: #ef6a6d; --pgh: #a48cf0; --chip-ink: #0e1219;
   color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 76px); }
+html { scroll-behavior: smooth; scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 84px); }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body {
+  margin: 0;
   background: var(--bg); color: var(--ink);
-  font-family: var(--font-body); font-size: 17px; line-height: 1.55;
+  font-family: var(--font-body); font-size: 17px; line-height: 1.5;
   -webkit-text-size-adjust: 100%;
 }
 .wrap { max-width: 640px; margin: 0 auto; padding-inline: 16px; }
 a { color: var(--accent); }
-a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
-h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.12; }
 
 /* En-tête */
-.hero { padding-block: 28px 18px; }
-.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin: 0 0 6px; }
-.hero h1 { font-size: clamp(30px, 8vw, 42px); font-weight: 800; }
-.hero .dates { margin: 8px 0 0; color: var(--muted); }
-.route { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 4px; margin: 18px 0 0; padding: 0; list-style: none; }
-.route li { display: flex; align-items: center; gap: 4px; }
-.route li + li::before { content: "→"; color: var(--muted); margin-right: 2px; }
-.route a { text-decoration: none; color: var(--ink); font-weight: 700; font-size: 15px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); }
-.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; }
+.hero-band { background: var(--hero); color: var(--hero-ink); }
+.hero { padding-block: 28px 22px; }
+.eyebrow { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; opacity: .75; font-weight: 700; margin: 0 0 8px; }
+.hero h1 { font-size: clamp(32px, 9vw, 44px); font-weight: 800; letter-spacing: -.01em; }
+.hero .dates { margin: 10px 0 0; opacity: .85; }
+.route { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.route a {
+  display: block; text-decoration: none; color: var(--hero-ink);
+  padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.08);
+  border-top: 4px solid var(--c);
+}
+.route b { display: block; font-family: var(--font-display); font-size: 17px; }
+.route span { font-size: 14px; opacity: .8; }
+.today-btn { display: none; margin: 14px 0 0; }
+.today-btn.show { display: block; }
+.today-btn a { display: block; text-align: center; padding: 13px; border-radius: 12px; background: var(--nyc); color: var(--chip-ink); font-weight: 700; text-decoration: none; }
 
 /* Bandeau des jours */
 .days-nav {
   position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
   background: var(--bg); border-bottom: 1px solid var(--line);
+  box-shadow: 0 4px 12px -10px rgba(0,0,0,.35);
 }
 .days-nav .scroller { overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .days-nav .scroller::-webkit-scrollbar { display: none; }
-.days-nav ol { display: flex; gap: 6px; margin: 0; padding: 10px 16px; list-style: none; width: max-content; }
+.days-nav ol { display: flex; gap: 6px; margin: 0 auto; padding: 10px 16px; list-style: none; width: max-content; }
 .days-nav a {
-  display: flex; flex-direction: column; align-items: center; min-width: 54px; padding: 6px 8px 7px;
+  display: flex; flex-direction: column; align-items: center; min-width: 52px; padding: 5px 8px 6px;
   border-radius: 12px; text-decoration: none; color: var(--ink); background: var(--surface);
-  border: 1px solid var(--line); border-top: 4px solid var(--c);
-  font-variant-numeric: tabular-nums;
+  border: 1px solid var(--line); box-shadow: inset 0 4px 0 var(--c);
 }
-.days-nav .wd { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; }
-.days-nav .dn { font-family: var(--font-display); font-size: 22px; font-weight: 800; line-height: 1.1; }
-.days-nav a.is-today { background: var(--ink); color: var(--bg); border-color: var(--ink); border-top-color: var(--c); }
+.days-nav .wd { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; margin-top: 3px; }
+.days-nav .dn { font-family: var(--font-display); font-size: 21px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.days-nav a.is-current { border-color: var(--ink); }
+.days-nav a.is-today { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .days-nav a.is-today .wd { color: var(--bg); }
 
-/* Bouton aujourd'hui */
-.today-btn { display: none; margin: 14px 0 0; }
-.today-btn.show { display: block; }
-.today-btn a { display: block; text-align: center; padding: 12px; border-radius: 12px; background: var(--accent); color: var(--surface); font-weight: 700; text-decoration: none; }
-
 /* Fiches jour */
-main { display: flex; flex-direction: column; gap: 18px; padding-block: 18px 8px; }
-.day { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
-.day header { padding: 16px 16px 12px; border-left: 6px solid var(--c); }
-.day .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 6px; font-size: 14px; color: var(--muted); font-weight: 700; }
-.tag { background: var(--c); color: var(--chip-ink); padding: 2px 9px; border-radius: 999px; font-size: 13px; }
-.day h2 { font-size: 24px; font-weight: 800; }
-.day .sub { margin: 4px 0 0; color: var(--muted); }
-.day .body { padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 14px; }
-.slots { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 8px 14px; }
-.slots dt { font-weight: 700; font-size: 14px; color: var(--muted); padding-top: 2px; white-space: nowrap; }
+main { display: flex; flex-direction: column; gap: 20px; padding-block: 20px 8px; }
+.day { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+.day header {
+  padding: 18px 16px 14px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--c) 14%, var(--surface)), var(--surface));
+  border-top: 6px solid var(--c);
+}
+.day .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 0 0 8px; font-size: 14px; color: var(--muted); font-weight: 700; }
+.tag { background: var(--c); color: var(--chip-ink); padding: 2px 10px; border-radius: 999px; font-size: 13px; }
+.day h2 { font-size: 25px; font-weight: 800; }
+.day .sub { margin: 6px 0 0; color: var(--muted); }
+.day .body { padding: 6px 16px 18px; display: flex; flex-direction: column; gap: 14px; }
+
+/* Chiffres clés */
+.stats { margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.stats div { background: var(--soft); border-radius: 12px; padding: 8px 10px; min-width: 0; }
+.stats dt { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
+.stats dd { margin: 2px 0 0; font-family: var(--font-display); font-weight: 800; font-size: 16px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+
+/* Frise horaire */
+.timeline { list-style: none; margin: 4px 0 0; padding: 0; }
+.timeline li { position: relative; padding: 0 0 18px 26px; }
+.timeline li::before {
+  content: ""; position: absolute; left: 0; top: 5px; width: 12px; height: 12px; border-radius: 50%;
+  background: var(--surface); border: 3px solid var(--c, var(--accent));
+}
+.timeline li::after { content: ""; position: absolute; left: 5px; top: 20px; bottom: 0; width: 2px; background: var(--line); }
+.timeline li:last-child { padding-bottom: 0; }
+.timeline li:last-child::after { display: none; }
+.timeline time { display: block; font-family: var(--font-display); font-weight: 800; font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; line-height: 1.4; }
+.timeline li div { min-width: 0; color: var(--muted); font-size: 16px; }
+.timeline b { display: block; color: var(--ink); font-size: 17px; margin-bottom: 2px; }
+
+/* Créneaux simples (jours pas encore détaillés) */
+.slots { margin: 0; display: grid; grid-template-columns: 6.2em minmax(0, 1fr); gap: 10px 12px; }
+.slots dt { font-family: var(--font-display); font-weight: 800; font-size: 15px; color: var(--muted); padding-top: 1px; }
 .slots dd { margin: 0; min-width: 0; }
 .todo { color: var(--muted); font-style: italic; }
-.info { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 12px; background: var(--bg); font-size: 15px; }
-.info b { display: block; }
+
+/* Boutons Google Maps */
+.maps { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.map {
+  display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px 5px 8px; border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface)); color: var(--accent);
+  font-size: 14px; font-weight: 700; text-decoration: none; line-height: 1.25; white-space: nowrap;
+}
+
+/* Encadrés */
+.info { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; background: var(--soft); font-size: 15px; }
+.info b { display: block; font-size: 16px; }
 .info .ico { font-size: 18px; line-height: 1.3; flex: none; width: 22px; text-align: center; }
-.info div { min-width: 0; }
+.info > div { min-width: 0; }
+.info.key { background: color-mix(in srgb, var(--c) 16%, var(--surface)); }
+.note { margin: 0; font-size: 15px; color: var(--muted); }
+
+/* Menus dépliants */
+.plan-b { border: 1px solid var(--line); border-radius: 14px; padding: 0 14px; }
+.plan-b summary { cursor: pointer; font-weight: 700; padding: 13px 0; list-style: none; display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+.plan-b summary::-webkit-details-marker { display: none; }
+.plan-b summary::after { content: "+"; font-family: var(--font-display); font-size: 22px; line-height: 1; color: var(--accent); flex: none; }
+.plan-b[open] summary::after { content: "–"; }
+.plan-b .slots, .plan-b .timeline { padding-bottom: 14px; }
 
 /* Infos pratiques */
-.practical { padding-block: 10px 8px; }
-.practical h2 { font-size: 24px; margin: 0 0 12px; }
+.practical { padding-block: 14px 8px; }
+.practical h2 { font-size: 25px; margin: 0 0 12px; }
 .practical .grid { display: flex; flex-direction: column; gap: 10px; }
-.practical .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
-.practical h3 { font-size: 17px; margin: 0 0 4px; }
+.practical .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 13px 15px; display: flex; flex-direction: column; gap: 4px; }
+.practical h3 { font-size: 17px; }
 .practical p { margin: 0; }
-.top-link { display: inline-block; margin: 8px 0 0; font-weight: 700; }
-footer { color: var(--muted); font-size: 14px; padding-block: 18px 32px; }
-/* Programme horaire */
-.timeline { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
-.timeline li { display: grid; grid-template-columns: 4.2em 1fr; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
-.timeline li:first-child { border-top: 0; }
-.timeline time { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); white-space: nowrap; padding-top: 1px; }
-.timeline li div { min-width: 0; color: var(--muted); font-size: 16px; }
-.timeline b { display: block; color: var(--ink); font-size: 17px; }
-.plan-b { border: 1px solid var(--line); border-radius: 12px; padding: 0 12px; }
-.plan-b summary { cursor: pointer; font-weight: 700; padding: 12px 0; }
-.plan-b .slots, .plan-b .timeline { padding-bottom: 12px; }
-.note { margin: 0; font-size: 15px; color: var(--muted); }
-.stats { margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.stats div { background: var(--bg); border-radius: 12px; padding: 8px 10px; min-width: 0; }
-.stats dt { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; }
-.stats dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
-.maps { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-.map { display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--accent); font-size: 14px; font-weight: 700; text-decoration: none; line-height: 1.2; }
-.info .map { background: var(--surface); }
+.top-link { display: inline-block; margin: 14px 0 0; font-weight: 700; }
+footer { color: var(--muted); font-size: 14px; padding-block: 18px 36px; }
 </style>
 </head>
 <body>
 
+<div class="hero-band">
 <div class="wrap">
   <header class="hero">
     <p class="eyebrow">Famille · Octobre 2026</p>
     <h1 id="haut">Notre road trip aux États-Unis</h1>
     <p class="dates">Du samedi 24 au samedi 31 octobre 2026, avec les parents et ma sœur.</p>
     <ul class="route" aria-label="Itinéraire">
-      <li><a href="#sam-24" style="--c: var(--nyc)"><span class="dot"></span>New York</a></li>
-      <li><a href="#mer-28" style="--c: var(--phl)"><span class="dot"></span>Philadelphie</a></li>
-      <li><a href="#jeu-29" style="--c: var(--dc)"><span class="dot"></span>Washington</a></li>
-      <li><a href="#sam-31" style="--c: var(--pgh)"><span class="dot"></span>Pittsburgh</a></li>
+      <li><a href="#sam-24" style="--c: var(--nyc)"><b>New York</b><span>24 – 27 oct.</span></a></li>
+      <li><a href="#mer-28" style="--c: var(--phl)"><b>Philadelphie</b><span>28 oct.</span></a></li>
+      <li><a href="#jeu-29" style="--c: var(--dc)"><b>Washington</b><span>29 – 30 oct.</span></a></li>
+      <li><a href="#sam-31" style="--c: var(--pgh)"><b>Pittsburgh</b><span>30 – 31 oct.</span></a></li>
     </ul>
     <p class="today-btn" id="today-btn"><a href="#">Voir le programme d'aujourd'hui</a></p>
   </header>
+</div>
 </div>
 
 <nav class="days-nav" aria-label="Jours du voyage">
@@ -160,7 +199,7 @@ footer { color: var(--muted); font-size: 14px; padding-block: 18px 32px; }
       <li><a href="#jeu-29" style="--c: var(--dc)"><span class="wd">Jeu</span><span class="dn">29</span></a></li>
       <li><a href="#ven-30" style="--c: var(--dc)"><span class="wd">Ven</span><span class="dn">30</span></a></li>
       <li><a href="#sam-31" style="--c: var(--pgh)"><span class="wd">Sam</span><span class="dn">31</span></a></li>
-      <li><a href="#infos" style="--c: var(--muted)"><span class="wd">Infos</span><span class="dn">ℹ︎</span></a></li>
+      <li><a href="#infos" style="--c: var(--muted)"><span class="wd">Infos</span><span class="dn">i</span></a></li>
     </ol>
   </div>
 </nav>
@@ -175,7 +214,7 @@ footer { color: var(--muted); font-size: 14px; padding-block: 18px 32px; }
       <p class="sub">Atterrissage prévu vers 12 h 30 à JFK. Aucune visite avant 17 h : on prend le temps.</p>
     </header>
     <div class="body">
-      <div class="info"><span class="ico" aria-hidden="true">📱</span><div><b>Le plus important</b>Envoyez-moi un message dès que vous avez récupéré les valises. Je vous rejoins alors à la zone de prise en charge.</div></div>
+      <div class="info key"><span class="ico" aria-hidden="true">📱</span><div><b>Le plus important</b>Envoyez-moi un message dès que vous avez récupéré les valises. Je vous rejoins alors à la zone de prise en charge.</div></div>
 
       <ol class="timeline">
         <li><time>11 h 45</time><div><b>J'arrive à JFK</b>Je suis votre vol et j'attends votre message avant d'aller devant le terminal.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=John+F.+Kennedy+International+Airport%2C+Queens%2C+NY" target="_blank" rel="noopener">📍 JFK</a></span></div></li>
@@ -204,7 +243,7 @@ footer { color: var(--muted); font-size: 14px; padding-block: 18px 32px; }
         </dl>
       </details>
 
-      <div class="info"><span class="ico" aria-hidden="true">🅿️</span><div><b>Mon parking (réservé)</b>156 East 105th Street, East Harlem, NY 10029<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=156+E+105th+St+Parking%2C+156+East+105th+Street%2C+New+York%2C+NY+10029" target="_blank" rel="noopener">📍 Parking</a></span><br>Du sam. 24 oct. 14 h au mar. 27 oct. 18 h · couvert, avec voiturier<br>139,05 $ · Way.com, confirmation OGI61672221</div></div>
+      <div class="info"><span class="ico" aria-hidden="true">🅿️</span><div><b>Mon parking (réservé)</b>156 East 105th Street, East Harlem, NY 10029<br>Du sam. 24 oct. 14 h au mar. 27 oct. 18 h · couvert, avec voiturier<br>139,05 $ · Way.com, confirmation OGI61672221<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=156+E+105th+St+Parking%2C+156+East+105th+Street%2C+New+York%2C+NY+10029" target="_blank" rel="noopener">📍 Parking</a></span></div></div>
       <div class="info"><span class="ico" aria-hidden="true">🛏</span><div><b>On dort à East Harlem</b>À 3 min à pied du parking. <span class="todo">Adresse exacte à ajouter</span></div></div>
       <p class="note">Pas d'attraction payante aujourd'hui : le CityPASS commence dimanche avec la Statue de la Liberté.</p>
     </div>
@@ -424,6 +463,21 @@ footer { color: var(--muted); font-size: 14px; padding-block: 18px 32px; }
 </div>
 
 <script>
+(function () {
+  if (!("IntersectionObserver" in window)) return;
+  var links = {};
+  document.querySelectorAll('.days-nav a').forEach(function (a) { links[a.getAttribute('href').slice(1)] = a; });
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      var a = links[e.target.id]; if (!a) return;
+      Object.keys(links).forEach(function (k) { links[k].classList.remove('is-current'); });
+      a.classList.add('is-current');
+      var sc = a.closest('.scroller'); if (sc) sc.scrollTo({ left: a.offsetLeft - sc.clientWidth / 2 + a.offsetWidth / 2, behavior: 'smooth' });
+    });
+  }, { rootMargin: '-90px 0px -70% 0px' });
+  document.querySelectorAll('.day, #infos').forEach(function (el) { io.observe(el); });
+})();
 (function () {
   var d = new Date();
   var pad = function (n) { return (n < 10 ? "0" : "") + n; };
