@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Notre road trip USA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout : une seule colonne étroite, bandeau des jours collant en haut, une fiche par jour. */
+:root {
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --ink: #18202e;
+  --muted: #5b6475;
+  --line: #dde1e8;
+  --accent: #1f4fd1;
+  --nyc: #e0a100;
+  --phl: #2f8f6b;
+  --dc: #c8373b;
+  --pgh: #7a5cd6;
+  --chip-ink: #18202e;
+  --font-display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11151d; --surface: #1a2029; --ink: #eef1f6; --muted: #a3acbb; --line: #2c3442;
+    --accent: #7ea2ff; --nyc: #f2bd3a; --phl: #4fc196; --dc: #ef6a6d; --pgh: #a48cf0; --chip-ink: #11151d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11151d; --surface: #1a2029; --ink: #eef1f6; --muted: #a3acbb; --line: #2c3442;
+  --accent: #7ea2ff; --nyc: #f2bd3a; --phl: #4fc196; --dc: #ef6a6d; --pgh: #a48cf0; --chip-ink: #11151d;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 76px); }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 17px; line-height: 1.55;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap { max-width: 640px; margin: 0 auto; padding-inline: 16px; }
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+
+/* En-tête */
+.hero { padding-block: 28px 18px; }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin: 0 0 6px; }
+.hero h1 { font-size: clamp(30px, 8vw, 42px); font-weight: 800; }
+.hero .dates { margin: 8px 0 0; color: var(--muted); }
+.route { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 4px; margin: 18px 0 0; padding: 0; list-style: none; }
+.route li { display: flex; align-items: center; gap: 4px; }
+.route li + li::before { content: "→"; color: var(--muted); margin-right: 2px; }
+.route a { text-decoration: none; color: var(--ink); font-weight: 700; font-size: 15px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; }
+
+/* Bandeau des jours */
+.days-nav {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  background: var(--bg); border-bottom: 1px solid var(--line);
+}
+.days-nav .scroller { overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.days-nav .scroller::-webkit-scrollbar { display: none; }
+.days-nav ol { display: flex; gap: 6px; margin: 0; padding: 10px 16px; list-style: none; width: max-content; }
+.days-nav a {
+  display: flex; flex-direction: column; align-items: center; min-width: 54px; padding: 6px 8px 7px;
+  border-radius: 12px; text-decoration: none; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line); border-top: 4px solid var(--c);
+  font-variant-numeric: tabular-nums;
+}
+.days-nav .wd { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; }
+.days-nav .dn { font-family: var(--font-display); font-size: 22px; font-weight: 800; line-height: 1.1; }
+.days-nav a.is-today { background: var(--ink); color: var(--bg); border-color: var(--ink); border-top-color: var(--c); }
+.days-nav a.is-today .wd { color: var(--bg); }
+
+/* Bouton aujourd'hui */
+.today-btn { display: none; margin: 14px 0 0; }
+.today-btn.show { display: block; }
+.today-btn a { display: block; text-align: center; padding: 12px; border-radius: 12px; background: var(--accent); color: var(--surface); font-weight: 700; text-decoration: none; }
+
+/* Fiches jour */
+main { display: flex; flex-direction: column; gap: 18px; padding-block: 18px 8px; }
+.day { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+.day header { padding: 16px 16px 12px; border-left: 6px solid var(--c); }
+.day .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 6px; font-size: 14px; color: var(--muted); font-weight: 700; }
+.tag { background: var(--c); color: var(--chip-ink); padding: 2px 9px; border-radius: 999px; font-size: 13px; }
+.day h2 { font-size: 24px; font-weight: 800; }
+.day .sub { margin: 4px 0 0; color: var(--muted); }
+.day .body { padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 14px; }
+.slots { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 8px 14px; }
+.slots dt { font-weight: 700; font-size: 14px; color: var(--muted); padding-top: 2px; white-space: nowrap; }
+.slots dd { margin: 0; min-width: 0; }
+.todo { color: var(--muted); font-style: italic; }
+.info { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 12px; background: var(--bg); font-size: 15px; }
+.info b { display: block; }
+.info .ico { font-size: 18px; line-height: 1.3; flex: none; width: 22px; text-align: center; }
+.info div { min-width: 0; }
+
+/* Infos pratiques */
+.practical { padding-block: 10px 8px; }
+.practical h2 { font-size: 24px; margin: 0 0 12px; }
+.practical .grid { display: flex; flex-direction: column; gap: 10px; }
+.practical .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+.practical h3 { font-size: 17px; margin: 0 0 4px; }
+.practical p { margin: 0; }
+.top-link { display: inline-block; margin: 8px 0 0; font-weight: 700; }
+footer { color: var(--muted); font-size: 14px; padding-block: 18px 32px; }
+/* Programme horaire */
+.timeline { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.timeline li { display: grid; grid-template-columns: 4.2em 1fr; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+.timeline li:first-child { border-top: 0; }
+.timeline time { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); white-space: nowrap; padding-top: 1px; }
+.timeline li div { min-width: 0; color: var(--muted); font-size: 16px; }
+.timeline b { display: block; color: var(--ink); font-size: 17px; }
+.plan-b { border: 1px solid var(--line); border-radius: 12px; padding: 0 12px; }
+.plan-b summary { cursor: pointer; font-weight: 700; padding: 12px 0; }
+.plan-b .slots, .plan-b .timeline { padding-bottom: 12px; }
+.note { margin: 0; font-size: 15px; color: var(--muted); }
+.stats { margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stats div { background: var(--bg); border-radius: 12px; padding: 8px 10px; min-width: 0; }
+.stats dt { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; }
+.stats dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+.maps { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.map { display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--accent); font-size: 14px; font-weight: 700; text-decoration: none; line-height: 1.2; }
+.info .map { background: var(--surface); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="hero">
+    <p class="eyebrow">Famille · Octobre 2026</p>
+    <h1 id="haut">Notre road trip aux États-Unis</h1>
+    <p class="dates">Du samedi 24 au samedi 31 octobre 2026, avec les parents et ma sœur.</p>
+    <ul class="route" aria-label="Itinéraire">
+      <li><a href="#sam-24" style="--c: var(--nyc)"><span class="dot"></span>New York</a></li>
+      <li><a href="#mer-28" style="--c: var(--phl)"><span class="dot"></span>Philadelphie</a></li>
+      <li><a href="#jeu-29" style="--c: var(--dc)"><span class="dot"></span>Washington</a></li>
+      <li><a href="#sam-31" style="--c: var(--pgh)"><span class="dot"></span>Pittsburgh</a></li>
+    </ul>
+    <p class="today-btn" id="today-btn"><a href="#">Voir le programme d'aujourd'hui</a></p>
+  </header>
+</div>
+
+<nav class="days-nav" aria-label="Jours du voyage">
+  <div class="scroller">
+    <ol>
+      <li><a href="#sam-24" style="--c: var(--nyc)"><span class="wd">Sam</span><span class="dn">24</span></a></li>
+      <li><a href="#dim-25" style="--c: var(--nyc)"><span class="wd">Dim</span><span class="dn">25</span></a></li>
+      <li><a href="#lun-26" style="--c: var(--nyc)"><span class="wd">Lun</span><span class="dn">26</span></a></li>
+      <li><a href="#mar-27" style="--c: var(--nyc)"><span class="wd">Mar</span><span class="dn">27</span></a></li>
+      <li><a href="#mer-28" style="--c: var(--phl)"><span class="wd">Mer</span><span class="dn">28</span></a></li>
+      <li><a href="#jeu-29" style="--c: var(--dc)"><span class="wd">Jeu</span><span class="dn">29</span></a></li>
+      <li><a href="#ven-30" style="--c: var(--dc)"><span class="wd">Ven</span><span class="dn">30</span></a></li>
+      <li><a href="#sam-31" style="--c: var(--pgh)"><span class="wd">Sam</span><span class="dn">31</span></a></li>
+      <li><a href="#infos" style="--c: var(--muted)"><span class="wd">Infos</span><span class="dn">ℹ︎</span></a></li>
+    </ol>
+  </div>
+</nav>
+
+<div class="wrap">
+<main>
+
+  <section class="day" id="sam-24" data-date="2026-10-24" style="--c: var(--nyc)">
+    <header>
+      <p class="meta"><span class="tag">New York</span> Samedi 24 octobre · Jour 1</p>
+      <h2>Arrivée à New York</h2>
+      <p class="sub">Atterrissage prévu vers 12 h 30 à JFK. Aucune visite avant 17 h : on prend le temps.</p>
+    </header>
+    <div class="body">
+      <div class="info"><span class="ico" aria-hidden="true">📱</span><div><b>Le plus important</b>Envoyez-moi un message dès que vous avez récupéré les valises. Je vous rejoins alors à la zone de prise en charge.</div></div>
+
+      <ol class="timeline">
+        <li><time>11 h 45</time><div><b>J'arrive à JFK</b>Je suis votre vol et j'attends votre message avant d'aller devant le terminal.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=John+F.+Kennedy+International+Airport%2C+Queens%2C+NY" target="_blank" rel="noopener">📍 JFK</a></span></div></li>
+        <li><time>12 h 30</time><div><b>Atterrissage, immigration, bagages</b>Je compte environ 1 h 30 entre l'atterrissage et le moment où vous montez dans la voiture.</div></li>
+        <li><time>14 h 00</time><div><b>JFK → East Harlem</b>Je vous récupère avec le Honda Pilot, environ 45 à 70 min de route.</div></li>
+        <li><time>15 h 05</time><div><b>Arrivée au logement</b>On décharge les valises, on s'installe, toilettes. Le logement est à 3 min à pied du parking.</div></li>
+        <li><time>15 h 30</time><div><b>Je vais garer la voiture</b>Au parking du 156 E 105th Street (voiturier), puis je reviens à pied (3 min).<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=156+E+105th+St+Parking%2C+156+East+105th+Street%2C+New+York%2C+NY+10029" target="_blank" rel="noopener">📍 Parking</a></span></div></li>
+        <li><time>16 h 00</time><div><b>Pause</b>Une vraie pause après le vol. Ensuite taxi ou métro vers Midtown.</div></li>
+        <li><time>17 h 15</time><div><b>Grand Central Terminal</b>Le grand hall et les photos. On voit aussi le Chrysler Building de l'extérieur.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Grand+Central+Terminal%2C+New+York" target="_blank" rel="noopener">📍 Grand Central</a> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Chrysler+Building%2C+New+York" target="_blank" rel="noopener">📍 Chrysler</a></span></div></li>
+        <li><time>18 h 00</time><div><b>Bryant Park et la New York Public Library</b>Petite balade, on peut s'asseoir. La bibliothèque, surtout de l'extérieur à cette heure-là.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Bryant+Park%2C+New+York" target="_blank" rel="noopener">📍 Bryant Park</a> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=New+York+Public+Library+Stephen+A.+Schwarzman+Building" target="_blank" rel="noopener">📍 Bibliothèque</a></span></div></li>
+        <li><time>18 h 45</time><div><b>Rockefeller Center et 5th Avenue</b>La place et St. Patrick's Cathedral de l'extérieur. Le Top of the Rock, je le garde pour lundi soir.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Rockefeller+Center%2C+New+York" target="_blank" rel="noopener">📍 Rockefeller</a> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=St.+Patrick%27s+Cathedral%2C+New+York" target="_blank" rel="noopener">📍 St. Patrick's</a></span></div></li>
+        <li><time>19 h 30</time><div><b>Times Square de nuit</b>Le grand moment de la soirée : les écrans, les lumières, les photos, sans se presser.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Times+Square%2C+New+York" target="_blank" rel="noopener">📍 Times Square</a></span></div></li>
+        <li><time>20 h 30</time><div><b>Dîner libre</b>On choisit sur le moment : le resto prévu à Midtown / Hell's Kitchen, un petit fast-food ou un resto près du logement, ou quelques courses pour manger à la maison.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Hell%27s+Kitchen%2C+New+York" target="_blank" rel="noopener">📍 Hell's Kitchen</a></span></div></li>
+        <li><time>22 h 15</time><div><b>Retour au logement et dodo</b>En métro ou en taxi jusqu'à East Harlem (si on n'est pas déjà rentrés).</div></li>
+      </ol>
+
+      <div class="info"><span class="ico" aria-hidden="true">🚕</span><div><b>Pour ménager les jambes de Maman</b>Ça fait pas mal de marche entre les sites. On prendra un taxi au moins une fois, surtout entre Grand Central et Rockefeller.</div></div>
+
+      <details class="plan-b">
+        <summary>Et si on arrive plus tard au logement ?</summary>
+        <dl class="slots">
+          <dt>Avant 15 h</dt><dd>Super, plus de temps pour se reposer avant de partir.</dd>
+          <dt>15 h – 16 h</dt><dd>C'est le scénario prévu : départ en visite vers 16 h 45 – 17 h 15. On raccourcit Bryant Park si besoin.</dd>
+          <dt>16 h – 17 h</dt><dd>On garde la pause, on part plus tard et on passe plus vite sur Bryant Park.</dd>
+          <dt>Après 17 h</dt><dd>On va directement à Times Square, puis on dîne.</dd>
+        </dl>
+      </details>
+
+      <div class="info"><span class="ico" aria-hidden="true">🅿️</span><div><b>Mon parking (réservé)</b>156 East 105th Street, East Harlem, NY 10029<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=156+E+105th+St+Parking%2C+156+East+105th+Street%2C+New+York%2C+NY+10029" target="_blank" rel="noopener">📍 Parking</a></span><br>Du sam. 24 oct. 14 h au mar. 27 oct. 18 h · couvert, avec voiturier<br>139,05 $ · Way.com, confirmation OGI61672221</div></div>
+      <div class="info"><span class="ico" aria-hidden="true">🛏</span><div><b>On dort à East Harlem</b>À 3 min à pied du parking. <span class="todo">Adresse exacte à ajouter</span></div></div>
+      <p class="note">Pas d'attraction payante aujourd'hui : le CityPASS commence dimanche avec la Statue de la Liberté.</p>
+    </div>
+  </section>
+
+  <section class="day" id="dim-25" data-date="2026-10-25" style="--c: var(--nyc)">
+    <header>
+      <p class="meta"><span class="tag">New York</span> Dimanche 25 octobre · Jour 2</p>
+      <h2>Statue de la Liberté, Wall Street et Brooklyn Bridge</h2>
+      <p class="sub">La journée la plus physique du séjour. Mettez de bonnes chaussures !</p>
+    </header>
+    <div class="body">
+      <dl class="stats">
+        <div><dt>Départ</dt><dd>8 h 15</dd></div>
+        <div><dt>Retour</dt><dd>20 h 30 – 21 h</dd></div>
+        <div><dt>Marche</dt><dd>6 – 8 km</dd></div>
+      </dl>
+
+      <ol class="timeline">
+        <li><time>8 h 15</time><div><b>Départ d'East Harlem</b>Métro jusqu'à Battery Park, environ 50 à 60 min avec la marge pour rejoindre l'embarcadère.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Statue+City+Cruises%2C+Battery+Park%2C+New+York" target="_blank" rel="noopener">📍 Embarcadère</a></span></div></li>
+        <li><time>9 h 30</time><div><b>Statue de la Liberté et Ellis Island</b>Ferry depuis The Battery, Liberty Island puis Ellis Island, et retour à Manhattan vers 13 h. L'heure du billet, c'est l'entrée dans la file de sécurité, pas le départ du ferry. Premier jour du CityPASS.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Statue+of+Liberty%2C+New+York" target="_blank" rel="noopener">📍 Statue</a> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Ellis+Island+National+Museum+of+Immigration" target="_blank" rel="noopener">📍 Ellis Island</a></span></div></li>
+        <li><time>13 h 00</time><div><b>Déjeuner à Lower Manhattan</b>Une vraie pause assise d'une heure, vers Battery Park ou sur la route de Wall Street.</div></li>
+        <li><time>14 h 00</time><div><b>Wall Street</b>Courte balade : la Bourse, Federal Hall et peut-être Trinity Church.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=New+York+Stock+Exchange%2C+11+Wall+Street" target="_blank" rel="noopener">📍 Bourse</a> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Federal+Hall+National+Memorial%2C+New+York" target="_blank" rel="noopener">📍 Federal Hall</a> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Trinity+Church+Wall+Street%2C+New+York" target="_blank" rel="noopener">📍 Trinity Church</a></span></div></li>
+        <li><time>14 h 45</time><div><b>Mémorial du 11-Septembre</b>Les deux bassins commémoratifs, sans le musée. Taxi depuis Wall Street si besoin.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=9%2F11+Memorial%2C+New+York" target="_blank" rel="noopener">📍 Mémorial</a></span></div></li>
+        <li><time>15 h 15</time><div><b>Taxi jusqu'au Brooklyn Bridge</b>Jusqu'à City Hall Park, pour garder de l'énergie pour la traversée.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Brooklyn+Bridge+pedestrian+entrance%2C+City+Hall+Park%2C+New+York" target="_blank" rel="noopener">📍 Entrée du pont</a></span></div></li>
+        <li><time>15 h 45</time><div><b>Traversée du Brooklyn Bridge</b>Environ 1,8 km à pied, 45 à 60 min avec les photos. Ça monte un peu et il n'y a presque pas de bancs.</div></li>
+        <li><time>16 h 45</time><div><b>DUMBO et Pebble Beach</b>La photo du Manhattan Bridge depuis Washington Street, puis le front de mer face à Manhattan. Avec un peu de chance, on voit les lumières s'allumer sur les immeubles.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Washington+Street+and+Water+Street%2C+Brooklyn%2C+NY" target="_blank" rel="noopener">📍 Photo Washington St</a> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Pebble+Beach%2C+Brooklyn+Bridge+Park" target="_blank" rel="noopener">📍 Pebble Beach</a></span></div></li>
+        <li><time>18 h 15</time><div><b>Dîner à DUMBO</b>Un resto près du front de mer, pour ne pas rallonger les trajets.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=DUMBO%2C+Brooklyn%2C+NY" target="_blank" rel="noopener">📍 DUMBO</a></span></div></li>
+        <li><time>19 h 30</time><div><b>Retour au logement</b>Taxi jusqu'à East Harlem, ou métro si tout le monde est encore en forme.</div></li>
+      </ol>
+
+      <details class="plan-b">
+        <summary>Si c'est trop de marche pour Maman</summary>
+        <dl class="slots">
+          <dt>À 15 h 15</dt><dd>Je décide après le mémorial, selon la fatigue : on traverse le pont à pied, ou on va directement à DUMBO en taxi.</dd>
+          <dt>Le matin</dt><dd>Si la marche devient difficile dès le matin, on raccourcit ou on saute Ellis Island.</dd>
+          <dt>Sur les îles</dt><dd>Les ferries et les îles sont accessibles, avec quelques fauteuils roulants disponibles sur place.</dd>
+        </dl>
+      </details>
+
+      <div class="info"><span class="ico" aria-hidden="true">🛏</span><div><b>On dort à East Harlem</b></div></div>
+      <p class="note">Sans le musée du 11-Septembre, il reste une attraction du CityPASS à choisir (croisière Circle Line ou Edge), un autre jour que dimanche.</p>
+    </div>
+  </section>
+
+  <section class="day" id="lun-26" data-date="2026-10-26" style="--c: var(--nyc)">
+    <header>
+      <p class="meta"><span class="tag">New York</span> Lundi 26 octobre · Jour 3</p>
+      <h2>Central Park, MoMA, Empire State et Top of the Rock</h2>
+      <p class="sub">Un observatoire de jour, l'autre de nuit, et une vraie pause l'après-midi.</p>
+    </header>
+    <div class="body">
+      <dl class="stats">
+        <div><dt>Départ</dt><dd>8 h 30</dd></div>
+        <div><dt>Retour</dt><dd>22 h 15</dd></div>
+        <div><dt>Marche</dt><dd>4 – 6 km</dd></div>
+      </dl>
+
+      <ol class="timeline">
+        <li><time>8 h 00</time><div><b>Petit-déjeuner au logement</b>Réveil tranquille après la grosse journée de dimanche.</div></li>
+        <li><time>8 h 30</time><div><b>Taxi jusqu'à Central Park</b>Entrée côté est, à la hauteur de la 72nd Street. Environ 15 à 25 min de route.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Central+Park+East+72nd+Street+entrance%2C+New+York" target="_blank" rel="noopener">📍 Entrée 72nd St</a></span></div></li>
+        <li><time>9 h 00</time><div><b>Central Park en automne</b>Petit circuit autour de Bethesda Terrace et du lac, avec des pauses. Bow Bridge seulement si Maman est en forme. La fontaine de Bethesda est en travaux et risque d'être arrêtée.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Bethesda+Terrace%2C+Central+Park%2C+New+York" target="_blank" rel="noopener">📍 Bethesda Terrace</a> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Bow+Bridge%2C+Central+Park%2C+New+York" target="_blank" rel="noopener">📍 Bow Bridge</a></span></div></li>
+        <li><time>10 h 00</time><div><b>Taxi jusqu'au MoMA</b>Pour arriver pile à l'ouverture, à 10 h 30.</div></li>
+        <li><time>10 h 30</time><div><b>MoMA</b>Deux heures pour La Nuit étoilée de Van Gogh, les Monet et les Picasso. Il y a des ascenseurs et des sièges dans les salles. Billet à part, pas dans le CityPASS : 30 $ adulte, 22 $ à partir de 65 ans. <a href="https://www.moma.org/tickets/" target="_blank" rel="noopener">Billetterie officielle</a><span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=The+Museum+of+Modern+Art%2C+11+West+53rd+Street%2C+New+York" target="_blank" rel="noopener">📍 MoMA</a></span></div></li>
+        <li><time>12 h 30</time><div><b>Déjeuner assis près du MoMA</b>On se pose vraiment avant l'après-midi.</div></li>
+        <li><time>13 h 45</time><div><b>Taxi jusqu'à l'Empire State Building</b>Dépose à l'entrée visiteurs, 20 W 34th Street.</div></li>
+        <li><time>14 h 15</time><div><b>Empire State Building de jour</b>La vue panoramique du 86e étage. Réservation vers 14 h 15 – 14 h 30 avec le CityPASS.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Empire+State+Building%2C+20+West+34th+Street%2C+New+York" target="_blank" rel="noopener">📍 Empire State</a></span></div></li>
+        <li><time>16 h 00</time><div><b>Goûter chez Levain Bakery 🍪</b>Taxi jusqu'à Flatiron (10 à 20 min). Leurs énormes cookies à emporter : je prends un Chocolate Chip Walnut et un Dark Chocolate Chocolate Chip à partager. On peut les manger assis à Madison Square Park s'il fait beau.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Levain+Bakery%2C+2+West+18th+Street%2C+New+York" target="_blank" rel="noopener">📍 Levain Flatiron</a> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Madison+Square+Park%2C+New+York" target="_blank" rel="noopener">📍 Madison Square Park</a></span></div></li>
+        <li><time>16 h 40</time><div><b>Retour et repos au logement</b>Le créneau le plus souple de la journée. Si tout le monde est en forme, on peut aussi rester à Midtown pour un café ou un peu de shopping.</div></li>
+        <li><time>18 h 30</time><div><b>Dîner près de Rockefeller Center</b>Taxi depuis Harlem si on est rentrés. Le soleil se couche vers 18 h, donc il fera bien nuit pour la suite.</div></li>
+        <li><time>20 h 30</time><div><b>Top of the Rock de nuit</b>New York illuminée et l'Empire State Building allumé. Réservation vers 20 h 30 avec le CityPASS.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Top+of+the+Rock%2C+30+Rockefeller+Plaza%2C+New+York" target="_blank" rel="noopener">📍 Top of the Rock</a></span></div></li>
+        <li><time>21 h 30</time><div><b>Retour au logement</b>Taxi ou métro jusqu'à East Harlem.</div></li>
+      </ol>
+
+      <details class="plan-b">
+        <summary>Si Maman est fatiguée</summary>
+        <dl class="slots">
+          <dt>En priorité</dt><dd>On raccourcit Central Park et le MoMA, mais on garde les deux observatoires.</dd>
+          <dt>Après l'Empire State</dt><dd>On rentre directement se reposer et on garde Levain pour mardi : il y a une boutique au 351 Amsterdam Avenue, près du Museum of Natural History.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Levain+Bakery%2C+351+Amsterdam+Avenue%2C+New+York" target="_blank" rel="noopener">📍 Levain Amsterdam Ave</a></span></dd>
+        </dl>
+      </details>
+
+      <div class="info"><span class="ico" aria-hidden="true">🎟</span><div><b>À réserver</b>MoMA (billet à part) · Empire State vers 14 h 15 (CityPASS) · Top of the Rock vers 20 h 30 (CityPASS)</div></div>
+      <div class="info"><span class="ico" aria-hidden="true">🛏</span><div><b>On dort à East Harlem</b></div></div>
+    </div>
+  </section>
+
+  <section class="day" id="mar-27" data-date="2026-10-27" style="--c: var(--nyc)">
+    <header>
+      <p class="meta"><span class="tag">New York</span> Mardi 27 octobre · Jour 4</p>
+      <h2>High Line, Chelsea Market et musée d'Histoire naturelle</h2>
+      <p class="sub">Dernier jour à New York, plus tranquille. Départ pour Philadelphie vers 17 h.</p>
+    </header>
+    <div class="body">
+      <dl class="stats">
+        <div><dt>Départ</dt><dd>9 h 00</dd></div>
+        <div><dt>Route</dt><dd>17 h 00</dd></div>
+        <div><dt>Marche</dt><dd>3 – 5 km</dd></div>
+      </dl>
+      <div class="info"><span class="ico" aria-hidden="true">🧳</span><div><b>Valises bouclées dès le matin</b>On fait tout avant de partir, pour ne pas perdre de temps l'après-midi.</div></div>
+
+      <ol class="timeline">
+        <li><time>8 h 00</time><div><b>Réveil, petit-déjeuner, valises</b>Tout le monde prépare ses affaires.</div></li>
+        <li><time>9 h 00</time><div><b>Check-out et taxi vers Hudson Yards</b>On laisse les valises au logement si c'est autorisé après le check-out. Environ 25 à 45 min de taxi.</div></li>
+        <li><time>9 h 45</time><div><b>Vessel et Hudson Yards</b>Arrêt photo devant Vessel et les grandes tours. Pas besoin de monter, on a déjà fait deux observatoires lundi.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Vessel%2C+Hudson+Yards%2C+New+York" target="_blank" rel="noopener">📍 Vessel</a></span></div></li>
+        <li><time>10 h 10</time><div><b>High Line, petite portion</b>Seulement 500 à 800 m sur les 2,3 km, autour de Hudson Yards ou de Chelsea. Puis taxi jusqu'à Chelsea Market. Les ascenseurs d'accès sont à vérifier sur place.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=The+High+Line%2C+Hudson+Yards+entrance%2C+New+York" target="_blank" rel="noopener">📍 High Line</a></span></div></li>
+        <li><time>11 h 00</time><div><b>Chelsea Market, déjeuner</b>Stands de cuisine du monde entier et quelques gourmandises. C'est animé, les places assises sont parfois difficiles à trouver.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Chelsea+Market%2C+75+9th+Avenue%2C+New+York" target="_blank" rel="noopener">📍 Chelsea Market</a></span></div></li>
+        <li><time>12 h 20</time><div><b>Taxi vers l'Upper West Side</b>Avec de la marge pour la circulation.</div></li>
+        <li><time>13 h 15</time><div><b>Musée d'Histoire naturelle</b>Le musée est immense, on fait une visite choisie : les dinosaures et fossiles, la baleine bleue du Milstein Hall, les minéraux et pierres précieuses, et peut-être le Rose Center (l'espace). Ascenseurs et fauteuils roulants gratuits sur place. Inclus dans le CityPASS.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=American+Museum+of+Natural+History%2C+200+Central+Park+West%2C+New+York" target="_blank" rel="noopener">📍 Musée</a></span></div></li>
+        <li><time>16 h 15</time><div><b>Je viens vous chercher au musée</b>Vous finissez tranquillement la visite et vous me rejoignez au point de rendez-vous convenu.</div></li>
+        <li><time>16 h 45</time><div><b>Départ pour Philadelphie</b>Les valises sont déjà dans la voiture, on monte et on y va.</div></li>
+      </ol>
+
+      <details class="plan-b">
+        <summary>Pendant le musée : mon opération voiture et valises</summary>
+        <ol class="timeline">
+          <li><time>13 h 15</time><div><b>Je vous accompagne à l'entrée</b>On vérifie les billets et on fixe un point de rendez-vous précis dehors.</div></li>
+          <li><time>13 h 35</time><div><b>Retour à East Harlem</b>En métro ou en taxi.</div></li>
+          <li><time>14 h 20</time><div><b>Je récupère les valises</b>Étape sautée si elles sont déjà dans la voiture.</div></li>
+          <li><time>14 h 50</time><div><b>Je récupère le Honda Pilot</b>Au parking du 156 E 105th Street, le temps que le voiturier sorte la voiture. Réservé jusqu'à 18 h, ça laisse de la marge.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=156+E+105th+St+Parking%2C+156+East+105th+Street%2C+New+York%2C+NY+10029" target="_blank" rel="noopener">📍 Parking</a></span></div></li>
+          <li><time>15 h 20</time><div><b>Route vers le musée</b>25 à 50 min selon la circulation, plus le temps de trouver où s'arrêter. Pas de double file sur Central Park West.</div></li>
+        </ol>
+      </details>
+
+      <details class="plan-b">
+        <summary>Si Maman est fatiguée</summary>
+        <dl class="slots">
+          <dt>Le matin</dt><dd>On saute Hudson Yards et la High Line : petit-déjeuner tranquille, Chelsea Market vers 11 h, puis le musée à 13 h 15. Ça économise 1 à 1,5 km de marche.</dd>
+        </dl>
+      </details>
+
+      <div class="info"><span class="ico" aria-hidden="true">⚠️</span><div><b>À vérifier avant</b>Que le logement garde les valises après le check-out. Sinon, je charge la voiture le matin, à condition que le parking accepte une sortie puis une nouvelle entrée.</div></div>
+      <div class="info"><span class="ico" aria-hidden="true">🚗</span><div><b>Trajet New York → Philadelphie</b>Environ 2 h de route (environ 150 km).</div></div>
+      <div class="info"><span class="ico" aria-hidden="true">🛏</span><div><b>On dort à Philadelphie</b><span class="todo">Adresse à ajouter</span></div></div>
+    </div>
+  </section>
+
+  <section class="day" id="mer-28" data-date="2026-10-28" style="--c: var(--phl)">
+    <header>
+      <p class="meta"><span class="tag">Philadelphie</span> Mercredi 28 octobre · Jour 5</p>
+      <h2>Journée à Philadelphie</h2>
+      <p class="sub">Départ le soir pour Washington.</p>
+    </header>
+    <div class="body">
+      <dl class="slots">
+        <dt>Matin</dt><dd class="todo">À compléter</dd>
+        <dt>Après-midi</dt><dd class="todo">À compléter</dd>
+        <dt>Soir</dt><dd>Route vers Washington DC.</dd>
+      </dl>
+      <div class="info"><span class="ico" aria-hidden="true">🚗</span><div><b>Trajet Philadelphie → Washington</b>Environ 2 h 30 de route (environ 225 km).</div></div>
+      <div class="info"><span class="ico" aria-hidden="true">🛏</span><div><b>On dort à Washington</b><span class="todo">Adresse à ajouter</span></div></div>
+    </div>
+  </section>
+
+  <section class="day" id="jeu-29" data-date="2026-10-29" style="--c: var(--dc)">
+    <header>
+      <p class="meta"><span class="tag">Washington DC</span> Jeudi 29 octobre · Jour 6</p>
+      <h2>Visite de Washington</h2>
+    </header>
+    <div class="body">
+      <dl class="slots">
+        <dt>Matin</dt><dd class="todo">À compléter</dd>
+        <dt>Après-midi</dt><dd class="todo">À compléter</dd>
+        <dt>Soir</dt><dd class="todo">À compléter</dd>
+      </dl>
+      <div class="info"><span class="ico" aria-hidden="true">🛏</span><div><b>On dort à Washington</b></div></div>
+    </div>
+  </section>
+
+  <section class="day" id="ven-30" data-date="2026-10-30" style="--c: var(--dc)">
+    <header>
+      <p class="meta"><span class="tag">Outlet</span> Vendredi 30 octobre · Jour 7</p>
+      <h2>Shopping à l'outlet, puis Pittsburgh</h2>
+      <p class="sub">Outlet près de Washington (ville à préciser), départ en début ou fin d'après-midi.</p>
+    </header>
+    <div class="body">
+      <dl class="slots">
+        <dt>Matin</dt><dd>Outlet <span class="todo">(nom et adresse à ajouter)</span></dd>
+        <dt>Après-midi</dt><dd>Route vers Pittsburgh.</dd>
+        <dt>Soir</dt><dd>Arrivée à Pittsburgh.</dd>
+      </dl>
+      <div class="info"><span class="ico" aria-hidden="true">🚗</span><div><b>Trajet Washington → Pittsburgh</b>Environ 4 h de route (environ 390 km), à ajuster selon l'outlet.</div></div>
+      <div class="info"><span class="ico" aria-hidden="true">🛏</span><div><b>On dort à Pittsburgh</b>Chez moi.</div></div>
+    </div>
+  </section>
+
+  <section class="day" id="sam-31" data-date="2026-10-31" style="--c: var(--pgh)">
+    <header>
+      <p class="meta"><span class="tag">Pittsburgh</span> Samedi 31 octobre · Jour 8</p>
+      <h2>Départ de ma sœur</h2>
+      <p class="sub">Vol au départ de Pittsburgh vers 13 h – 14 h.</p>
+    </header>
+    <div class="body">
+      <dl class="slots">
+        <dt>Matin</dt><dd>Direction l'aéroport de Pittsburgh (PIT), arriver au moins 2 h avant le vol.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Pittsburgh+International+Airport" target="_blank" rel="noopener">📍 Aéroport PIT</a></span></dd>
+        <dt>13 h – 14 h</dt><dd>Décollage <span class="todo">(numéro de vol à ajouter)</span></dd>
+        <dt>Après</dt><dd>Début de la semaine à Pittsburgh avec les parents.</dd>
+      </dl>
+    </div>
+  </section>
+
+</main>
+
+<section class="practical" id="infos">
+  <h2>Infos pratiques</h2>
+  <div class="grid">
+    <div class="card"><h3>Logements</h3><p>New York : East Harlem.</p><p class="todo">Adresses exactes à ajouter (New York, Philadelphie, Washington).</p></div>
+    <div class="card"><h3>Parking à New York</h3><p>156 East 105th Street, du 24 oct. 14 h au 27 oct. 18 h. Confirmation Way.com OGI61672221.<span class="maps"> <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=156+E+105th+St+Parking%2C+156+East+105th+Street%2C+New+York%2C+NY+10029" target="_blank" rel="noopener">📍 Parking</a></span></p></div>
+    <div class="card"><h3>Vols</h3><p class="todo">Arrivée le 24 et départ de ma sœur le 31 : numéros de vol à ajouter.</p></div>
+    <div class="card"><h3>Numéros utiles</h3><p>Urgences aux États-Unis : <b>911</b>.</p><p class="todo">Mon numéro à ajouter.</p></div>
+    <div class="card"><h3>Décalage horaire</h3><p>Toute la côte Est a 6 h de moins que la France (5 h à partir du dimanche 25 octobre, quand la France passe à l'heure d'hiver).</p></div>
+  </div>
+  <a class="top-link" href="#haut">↑ Retour en haut</a>
+</section>
+
+<footer>Programme détaillé à venir, jour par jour.</footer>
+</div>
+
+<script>
+(function () {
+  var d = new Date();
+  var pad = function (n) { return (n < 10 ? "0" : "") + n; };
+  var today = d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  var sec = document.querySelector('.day[data-date="' + today + '"]');
+  if (!sec) return;
+  var link = document.querySelector('.days-nav a[href="#' + sec.id + '"]');
+  if (link) { link.classList.add("is-today"); link.setAttribute("aria-current", "date"); link.scrollIntoView({ inline: "center", block: "nearest" }); }
+  var btn = document.getElementById("today-btn");
+  btn.querySelector("a").setAttribute("href", "#" + sec.id);
+  btn.classList.add("show");
+})();
+</script>
+</body>
+</html>
